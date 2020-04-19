@@ -16,7 +16,7 @@ include $(DEVKITARM)/ds_rules
 export TARGET := $(shell basename $(CURDIR))
 export TOPDIR := $(CURDIR)
 
-.PHONY: $(TARGET).arm7 $(TARGET).arm9
+.PHONY: $(TARGET).arm7.elf $(TARGET).arm9.elf
 
 #------------------------------------------------------------------------------
 # main targets
@@ -47,15 +47,20 @@ dist: $(TARGET).nds
 	tar czvf vnds-$(VERSION).tar.gz vnds/
 
 $(TARGET)-EFS.nds: $(TARGET).nds
-	@ndstool -c $(TARGET)-EFS.nds -7 $(TARGET).arm7 -9 $(TARGET).arm9 $(ICON) "$(SHORTNAME);$(LONGNAME);$(VERSION)" -d $(CURDIR)/vnds
+	@ndstool -u 00030004 -g VNDS 00 "VSULNVL-DS" -c $(TARGET)-EFS.nds -7 $(TARGET).arm7.elf -9 $(TARGET).arm9.elf \
+		$(ICON) "$(SHORTNAME);$(LONGNAME);$(VERSION)" -d $(CURDIR)/vnds
 	@$(EFS) $(notdir $@)
 
 $(TARGET).nds: $(TARGET).arm7 $(TARGET).arm9
-	@ndstool -c $(TARGET).nds -7 $(TARGET).arm7 -9 $(TARGET).arm9 $(ICON) "$(SHORTNAME);$(LONGNAME);$(VERSION)"
+	@ndstool -u 00030004 -g VNDS 00 "VSULNVL-DS" -c $(TARGET).nds -7 $(TARGET).arm7.elf -9 $(TARGET).arm9.elf \
+		$(ICON) "$(SHORTNAME);$(LONGNAME);$(VERSION)"
 
 #------------------------------------------------------------------------------
 $(TARGET).arm7	: arm7/$(TARGET).elf
+	cp src/arm7/$(TARGET).elf $(TARGET).arm7.elf
+
 $(TARGET).arm9	: arm9/$(TARGET).elf
+	cp src/arm9/$(TARGET).elf $(TARGET).arm9.elf
 
 #------------------------------------------------------------------------------
 arm7/$(TARGET).elf:

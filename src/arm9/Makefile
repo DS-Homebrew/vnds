@@ -25,7 +25,7 @@ ARCH	:=	-marm -mthumb-interwork
 
 CFLAGS	:=	-g -Wall -O2 \
  			-march=armv5te -mtune=arm946e-s -fomit-frame-pointer \
-			-ffast-math -save-temps \
+			-ffast-math \
 			$(ARCH) $(INCLUDE) -DARM9 \
 			-DVERSION_STRING="\"$(SHORTNAME) $(VERSION)\""
 
@@ -38,7 +38,7 @@ CFLAGS	+=	-DEFS
 
 CXXFLAGS := $(CFLAGS) -fno-rtti -fno-exceptions
 ASFLAGS := -g $(ARCH) -march=armv5te -mtune=arm946e-s
-LDFLAGS = -specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
+LDFLAGS = -specs=../../ds_arm9_hi.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
@@ -58,8 +58,7 @@ LIBDIRS	:=	$(CURDIR) $(LIBNDS)
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
 
-export ARM9BIN	:=	$(TOPDIR)/$(TARGET).arm9
-export ARM9ELF	:=	$(CURDIR)/$(TARGET).arm9.elf
+export ARM9ELF	:=	$(CURDIR)/$(TARGET).elf
 export DEPSDIR := $(CURDIR)/$(BUILD)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
@@ -109,10 +108,6 @@ DEPENDS	:=	$(OFILES:.o=.d)
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
-$(ARM9BIN)	:	$(ARM9ELF)
-	@$(OBJCOPY) -O binary $< $@
-	@echo built ... $(notdir $@)
-
 $(ARM9ELF)	:	$(OFILES)
 	@echo linking $(notdir $@)
 	@$(LD)  $(LDFLAGS) $(OFILES) $(LIBPATHS) $(LIBS) -o $@
