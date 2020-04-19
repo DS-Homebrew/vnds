@@ -364,14 +364,20 @@ bool CheckFile(char *path, bool save) {
 
 // search in directory for the NDS file
 bool SearchDirectory() {
-    DIR_ITER *dir;
+    DIR *pdir;
     bool found = false;
     char path[EFS_MAXPATHLEN];
     char filename[EFS_MAXPATHLEN];
     struct stat st;
 
-    dir = diropen(".");
-    while((dirnext(dir, filename, &st) == 0) && (!found)) {
+    pdir = opendir(".");
+    while(!found) {
+		struct dirent* pent = readdir(pdir);
+		if(pent == NULL) break;
+
+		stat(pent->d_name, &st);
+		sprintf(filename, pent->d_name);
+
         if(st.st_mode & S_IFDIR) {
             if(((strlen(filename) == 1) && (filename[0]!= '.')) ||
                 ((strlen(filename) == 2) && (strcasecmp(filename, "..")))  ||
@@ -391,7 +397,7 @@ bool SearchDirectory() {
             }
         }
     }
-    dirclose(dir);
+    closedir(pdir);
 
     return found;
 }

@@ -404,7 +404,7 @@ bool fexists(const char* filename) {
 }
 
 void setupCapture(int bank) {
-    REG_DISPCAPCNT = DCAP_ENABLE | DCAP_MODE(0) | DCAP_DST(0) | DCAP_SRC(0) | DCAP_SIZE(3) |
+    REG_DISPCAPCNT = DCAP_ENABLE | DCAP_MODE(0) | DCAP_SRC_ADDR(0) | DCAP_SRC(0) | DCAP_SIZE(3) |
         DCAP_OFFSET(0) | DCAP_BANK(bank) | DCAP_B(15) | DCAP_A(0);
 }
 void waitForCapture() {

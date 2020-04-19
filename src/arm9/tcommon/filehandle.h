@@ -1,6 +1,8 @@
 #ifndef T_FILEHANDLE_H
 #define T_FILEHANDLE_H
 
+#define MAXPATHLEN 256
+
 #include <nds.h>
 #include <string.h>
 #include "dsunzip.h"
