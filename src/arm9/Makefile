@@ -43,7 +43,7 @@ LDFLAGS = -specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:= -lvndsfat -ldswifi9 -lnds9 -lfreetype -lpng -lz -lhelixaac
+LIBS	:= -ldswifi9 -lfat -lnds9 -lfreetype -lpng -lz -lhelixaac
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
