@@ -22,4 +22,6 @@
 
 #define PNG_STREAM_LINES 16
 
+#define MAXPATHLEN 256
+
 #endif

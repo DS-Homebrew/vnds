@@ -115,11 +115,11 @@ devoptab_t EFSdevoptab = {
     "efs",                      // const char *name;
     sizeof(EFS_FileStruct),     // int structSize;
     &EFS_Open,                  // int (*open_r)(struct _reent *r, void *fileStruct, const char *path, int flags, int mode);
-    &EFS_Close,                 // int (*close_r)(struct _reent *r, int fd);
-    &EFS_Write,                 // int (*write_r)(struct _reent *r, int fd, const char *ptr, int len);
-    &EFS_Read,                  // int (*read_r)(struct _reent *r, int fd,char *ptr, int len);
-    &EFS_Seek,                  // int (*seek_r)(struct _reent *r, int fd, int pos, int dir);
-    &EFS_Fstat,                 // int (*fstat_r)(struct _reent *r, int fd, struct stat *st);
+    &EFS_Close,                 // int (*close_r)(struct _reent *r, void* fd);
+    &EFS_Write,                 // int (*write_r)(struct _reent *r, void* fd, const char *ptr, int len);
+    &EFS_Read,                  // int (*read_r)(struct _reent *r, void* fd,char *ptr, int len);
+    &EFS_Seek,                  // int (*seek_r)(struct _reent *r, void* fd, int pos, int dir);
+    &EFS_Fstat,                 // int (*fstat_r)(struct _reent *r, void* fd, struct stat *st);
     &EFS_Stat,                  // int (*stat_r)(struct _reent *r, const char *file, struct stat *st);
     NULL,                       // int (*link_r)(struct _reent *r, const char *existing, const char *newLink);
     NULL,                       // int (*unlink_r)(struct _reent *r, const char *name);
@@ -242,7 +242,7 @@ void ExtractDirectory(const char *prefix, u32 dir_id) {
             strcat(strbuf, entry_name);
             strcat(strbuf, "/");
 
-            if((searchmode == EFS_SEARCHDIR) && !stricmp(strbuf, fileInNDS)) {
+            if((searchmode == EFS_SEARCHDIR) && !strcmp(strbuf, fileInNDS)) {
                 file_idpos = dir_id;
                 file_idsize = file_id;
                 filematch = true;
@@ -255,7 +255,7 @@ void ExtractDirectory(const char *prefix, u32 dir_id) {
             strcpy(strbuf, prefix);
             strcat(strbuf, entry_name);
 
-            if (!stricmp(strbuf, fileInNDS)) {
+            if (!strcmp(strbuf, fileInNDS)) {
                 u32 top;
                 u32 bottom;
                 file_idpos = fat_offset + 8*file_id;
@@ -607,7 +607,7 @@ int EFS_Open(struct _reent *r, void *fileStruct, const char *path, int flags, in
 }
 
 // set the current position in the file
-off_t EFS_Seek(struct _reent *r, int fd, off_t pos, int dir) {
+off_t EFS_Seek(struct _reent *r, void* fd, off_t pos, int dir) {
     EFS_FileStruct *file = (EFS_FileStruct*)fd;
     switch(dir) {
         case SEEK_SET:
@@ -624,7 +624,7 @@ off_t EFS_Seek(struct _reent *r, int fd, off_t pos, int dir) {
 }
 
 // read data from file
-ssize_t EFS_Read(struct _reent *r, int fd, char *ptr, size_t len) {
+ssize_t EFS_Read(struct _reent *r, void* fd, char *ptr, size_t len) {
     EFS_FileStruct *file = (EFS_FileStruct*)fd;
 
     if(file->pos+len > file->end)
@@ -646,7 +646,7 @@ ssize_t EFS_Read(struct _reent *r, int fd, char *ptr, size_t len) {
 }
 
 // write data to file (only works using DLDI)
-ssize_t EFS_Write(struct _reent *r, int fd, const char *ptr, size_t len) {
+ssize_t EFS_Write(struct _reent *r, void* fd, const char *ptr, size_t len) {
     EFS_FileStruct *file = (EFS_FileStruct*)fd;
 
     if(file->pos+len > file->end)
@@ -669,7 +669,7 @@ ssize_t EFS_Write(struct _reent *r, int fd, const char *ptr, size_t len) {
 }
 
 // close current file
-int EFS_Close(struct _reent *r, int fd) {
+int EFS_Close(struct _reent *r, void* fd) {
     // flush writes in the file system
     if(useDLDI && hasWritten) {
         if(nds_file)
@@ -774,7 +774,7 @@ int EFS_DirNext(struct _reent *r, DIR_ITER *dirState, char *filename, struct sta
 }
 
 // get some info on a file
-int EFS_Fstat(struct _reent *r, int fd, struct stat *st) {
+int EFS_Fstat(struct _reent *r, void* fd, struct stat *st) {
     EFS_FileStruct *file = (EFS_FileStruct*)fd;
     st->st_size = file->end - file->start;
     // maybe add some other info?

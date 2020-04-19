@@ -138,7 +138,7 @@ int main(int argc, char** argv) {
 
 		VNSelect* vnselect = new VNSelect();
 		vnselect->Run();
-		memcpy(selectedNovelInfo, vnselect->selectedNovelInfo, sizeof(NovelInfo));
+		memcpy((void*)selectedNovelInfo, vnselect->selectedNovelInfo, sizeof(NovelInfo));
 		delete vnselect;
 
 		{
