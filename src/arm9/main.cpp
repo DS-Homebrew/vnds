@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
     //Timer0 + Timer1 are used by as_lib
     //Timer2 is for AAC
     //Timer3 is for Wifi
-    InitAACPlayer();
+    //InitAACPlayer();
 
     //Init ASLib
 	AS_Init(AS_MODE_MP3, 24*1024);
